@@ -51,8 +51,9 @@ type Notification struct {
 
 func init() {
 	uc := &Notification{
-		Config:          &NotificationConfig{},
-		UserConfigCache: NewUserConfigCache(),
+		Config:                 &NotificationConfig{},
+		UserConfigCache:        NewUserConfigCache(),
+		userMixinConfigMapping: make(map[string]*mixin.User),
 	}
 	plugin.Register(uc)
 }
