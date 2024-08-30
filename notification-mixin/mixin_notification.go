@@ -25,6 +25,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"net"
+	"net/url"
 	"sync"
 
 	"github.com/apache/incubator-answer-plugins/util"
@@ -171,6 +173,19 @@ func (n *Notification) sendNotification(notificationMsgTitle, notificationMsgDes
 		Shareable:   true,
 	}
 	n.fillCardAction(card, msg)
+
+	if len(card.Action) == 0 {
+		return errors.New("the card action is empty")
+	}
+
+	parsedAction, err := url.Parse(card.Action)
+	if err != nil {
+		return err
+	}
+
+	if parsedAction.Scheme != "https" || net.ParseIP(parsedAction.Host).IsPrivate() {
+		card.Action = "https://mixin.one"
+	}
 
 	cardBytes, err := json.Marshal(card)
 	if err != nil {
