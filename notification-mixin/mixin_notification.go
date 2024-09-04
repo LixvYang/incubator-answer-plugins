@@ -165,6 +165,13 @@ func (n *Notification) sendNotification(notificationMsgTitle, notificationMsgDes
 		return errors.New("invalid user mixin config")
 	}
 
+	if len(notificationMsgTitle) > 36 {
+		notificationMsgTitle = notificationMsgTitle[:33] + "..."
+	}
+	if len(notificationMsgDescription) > 1024 {
+		notificationMsgDescription = notificationMsgDescription[:1021] + "..."
+	}
+
 	card := &mixin.AppCardMessage{
 		AppID:       n.MixinBot.ClientID,
 		Title:       notificationMsgTitle,
@@ -193,7 +200,6 @@ func (n *Notification) sendNotification(notificationMsgTitle, notificationMsgDes
 	}
 
 	cardBase64code := base64.StdEncoding.EncodeToString(cardBytes)
-
 	return n.MixinBot.SendMessage(context.Background(), &mixin.MessageRequest{
 		ConversationID: mixin.UniqueConversationID(n.MixinBot.ClientID, userMixinConfig.UserID),
 		RecipientID:    userMixinConfig.UserID,
